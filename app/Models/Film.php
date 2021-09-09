@@ -5,13 +5,16 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class KategoriSnacks extends Model
+class Film extends Model
 {
     use HasFactory;
-    protected $table = "m_kategori_snacks";
 
+    protected $table = "m_film";
     protected $guarded = [];
 
-    protected $primaryKey = "id_kategori";
+    protected $casts = [
+        'is_active' => 'boolean'
+    ];
 
+    protected $primaryKey = "id_film";
 }
