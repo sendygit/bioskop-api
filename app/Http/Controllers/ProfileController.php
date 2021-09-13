@@ -10,6 +10,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 class ProfileController extends Controller
 {
+    
     public function index()
     {
         $data = User::orderBy('created_at', 'ASC')->get();
@@ -21,7 +22,7 @@ class ProfileController extends Controller
     }
 
    
-    public function show(Request $request, $id_user)
+    public function show($id_user)
     {
         $data = User::findOrFail($id_user);
         $response = [

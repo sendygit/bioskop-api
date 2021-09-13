@@ -11,6 +11,4 @@ class ProductionHouse extends Model
     protected $table = "production_house";
 
     protected $guarded = [];
-
-    protected $primaryKey = "id_ph";
 }

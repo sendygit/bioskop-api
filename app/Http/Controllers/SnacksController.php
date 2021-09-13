@@ -22,60 +22,15 @@ class SnacksController extends Controller
         return response()->json($response, Response::HTTP_OK);
     }
 
-
-    public function indexSnacks()
-    {
-        $data = Snacks::orderBy('id_snacks', 'ASC')->get();
-        $response = [
-            'message' => 'List Snack',
-            'data' => $data
-        ];
-        return response()->json($response, Response::HTTP_OK);
-    }
-
     public function listSnacks(Request $request)
     {
-        $data = DB::table('m_snacks')
-                ->where('id_kategori', $request->id_kategori)
-                ->get();
-        $response = [
-            'message' => 'List snacks by kategori',
-            'data' => $data
-        ];
-         return response()->json($response, Response::HTTP_OK);
+        $id_kategori = $request->id_kategori;
+      
+        return \DB::table('m_snacks')
+            ->orderBy('id_snacks', 'ASC')
+            ->when($id_kategori, function($query, $id_kategori){
+                return $query->where('id_kategori', $id_kategori);
+            })->get();
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 }

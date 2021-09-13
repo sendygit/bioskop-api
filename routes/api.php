@@ -6,6 +6,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\FilmController;
 use App\Http\Controllers\SnacksController;
 use App\Http\Controllers\StudioController;
+use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ProfileController;
 
 /*
@@ -31,11 +32,15 @@ Route::middleware(['auth:sanctum'])->group(function () {
     //SNACK
     Route::get('/kategori-snacks', [SnacksController::class, 'listKategori']);
     Route::get('/list-snacks', [SnacksController::class, 'listSnacks']);
-    Route::get('/list-snacks', [SnacksController::class, 'indexSnacks']);
     //FILM
-    Route::get('/list-film', [FilmController::class, 'index']);
-    // Route::get('/list-film', [FilmController::class, 'listFilm']);
-
+    Route::get('/list-film', [FilmController::class, 'listFilm']);
+    Route::get('/list-genre', [FilmController::class, 'listGenre']);
+    Route::get('/detail-film', [FilmController::class, 'detailFilm']);
+    Route::get('/production-house', [FilmController::class, 'ph']);
+    //PAYMENT
+    Route::get('/payment-method', [PaymentController::class, 'paymentMethod']);
+    Route::get('/payment-status', [PaymentController::class, 'paymentStatus']);
+    
 });
 
 Route::post('/login', [AuthController::class, 'login']);
