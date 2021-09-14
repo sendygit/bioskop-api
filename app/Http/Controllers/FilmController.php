@@ -60,4 +60,20 @@ class FilmController extends Controller
                 return $query->where('id_ph', $id_ph);
             })->get();
     }
+
+    public function schedule(Request $request)
+    {
+        $id_film = $request->id_film;
+        $id_waktu_tayang = $request->id_waktu_tayang;
+      
+        return \DB::table('vw_schedule')
+            ->orderBy('id_schedule', 'ASC')
+            ->when($id_film, function($query, $id_film){
+                return $query->where('id_film', $id_film);
+            })
+            ->when($id_waktu_tayang, function($query, $id_waktu_tayang){
+                return $query->where('id_waktu_tayang', $id_waktu_tayang);
+            })
+            ->get();
+    }
 }

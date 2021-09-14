@@ -29,7 +29,6 @@ class ProfileController extends Controller
             'message' => 'Detail of user',
             'data' => $data
         ];
-        //dd($request->email);
          return response()->json($response, Response::HTTP_OK);
     }
        
@@ -40,7 +39,7 @@ class ProfileController extends Controller
         $user = User::find($id_user)->update($request->all());
 
         $response = [
-        'message' => 'Account updated'
+        'message' => 'Account updated',
         ];
 
         return response()->json($response, Response::HTTP_OK);

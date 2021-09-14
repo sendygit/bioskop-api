@@ -22,7 +22,6 @@ use App\Http\Controllers\ProfileController;
 
 Route::middleware(['auth:sanctum'])->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
-    Route::resource('/studio',StudioController::class);
     //Route::resource('/profile',ProfileController::class)->except(['create', 'store', 'edit', 'destroy']);
     //Profile User
     Route::get('/profile', [ProfileController::class, 'index']);
@@ -37,6 +36,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('/list-genre', [FilmController::class, 'listGenre']);
     Route::get('/detail-film', [FilmController::class, 'detailFilm']);
     Route::get('/production-house', [FilmController::class, 'ph']);
+    Route::get('/schedule', [FilmController::class, 'schedule']);
     //PAYMENT
     Route::get('/payment-method', [PaymentController::class, 'paymentMethod']);
     Route::get('/payment-status', [PaymentController::class, 'paymentStatus']);
