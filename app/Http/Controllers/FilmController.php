@@ -76,4 +76,23 @@ class FilmController extends Controller
             })
             ->get();
     }
+
+    //KURSI
+    public function getAvailableSeat(Request $request)
+    {
+        $id_schedule = $request->id_schedule;
+        return DB::table('kursi')
+            ->join('vw_kursi_terjual', function ($join,  $id_schedule) {
+                $join->on('kursi.id_kursi', '=', 'vw_kursi_terjual.id_kursi')
+                ->whereNotNull('vw_kursi_terjual.id_schedule', '=', $id_schedule);
+            })
+            ->get();
+    }
+
+
+
+
+
+
+
 }

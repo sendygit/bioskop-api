@@ -5,10 +5,10 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Studio extends Model
+class TdetailSnacks extends Model
 {
     use HasFactory;
-    
+    protected $table = "t_detail_snacks";
 
-    protected $guarded = [];protected $table = "jenis_studio";
+    protected $guarded = [];
 }

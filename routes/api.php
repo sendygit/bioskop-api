@@ -8,6 +8,7 @@ use App\Http\Controllers\SnacksController;
 use App\Http\Controllers\StudioController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\TransactionController;
 
 /*
 |--------------------------------------------------------------------------
@@ -37,9 +38,16 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('/detail-film', [FilmController::class, 'detailFilm']);
     Route::get('/production-house', [FilmController::class, 'ph']);
     Route::get('/schedule', [FilmController::class, 'schedule']);
+    Route::get('/kursi', [FilmController::class, 'getAvailableSeat']);
+
     //PAYMENT
     Route::get('/payment-method', [PaymentController::class, 'paymentMethod']);
     Route::get('/payment-status', [PaymentController::class, 'paymentStatus']);
+    //TRANSACTION
+    Route::get('/submit-tiket', [TransactionController::class, 'submitTiket']);
+    Route::get('/submit-snacks', [TransactionController::class, 'submitSnacks']);
+    Route::get('/detail-transaksi', [TransactionController::class, 'detailTransaksi']);
+    Route::get('/buat-pesanan', [TransactionController::class, 'buatPesanan']);
     
 });
 
