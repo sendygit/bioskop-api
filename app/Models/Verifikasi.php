@@ -5,11 +5,10 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Bills extends Model
+class Verifikasi extends Model
 {
     use HasFactory;
-    protected $table = "t_bills";
+    protected $table = "t_verification_bills";
 
     protected $guarded = [];
-    protected $primaryKey = 'id_bills';
 }

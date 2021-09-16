@@ -15,20 +15,34 @@ class FilmController extends Controller
 {
     public function listfilm(Request $request)
     {
+
         $id_genre = $request->id_genre;
         $id_ph = $request->id_ph;
       
-        return \DB::table('vw_film')
-            ->orderBy('id_film', 'ASC')
+        $list_film = DB::table('vw_film')
             ->when($id_genre, function($query, $id_genre){
                 return $query->where('id_genre', $id_genre);
             })
             ->when($id_ph, function($query, $id_ph){
                 return $query->where('id_ph', $id_ph);
             })
+            ->groupBy('id_film')
+            ->orderBy('id_film', 'ASC')
             ->get();
+
+        foreach ($list_film as $film) {
+            $film->list_genre = DB::table('vw_genre')->where('id_film', $film->id_film)->get();
+        }
+        $response = [
+            'success' => true,
+            'message' => 'List film',
+            'data' => $list_film
+        ];
+        return response()->json($response, Response::HTTP_OK);
+        
     }
 
+    //List Genre
     public function listGenre()
     {
         $data = Genre::orderBy('id_genre', 'ASC')->get();
@@ -39,9 +53,11 @@ class FilmController extends Controller
         return response()->json($response, Response::HTTP_OK);
     }
 
+    //Detail Film
     public function detailFilm(Request $request)
     {
         $data = Film::findOrFail($request->id_film);
+        $data->list_genre = DB::table('vw_genre')->where('id_film', $data->id_film)->get();
         $response = [
             'message' => 'Detail film',
             'data' => $data
@@ -49,44 +65,62 @@ class FilmController extends Controller
          return response()->json($response, Response::HTTP_OK);
     }
 
-  
+    //Production House
     public function ph(Request $request)
     {
         $id_ph = $request->id_ph;
       
-        return \DB::table('production_house')
+        $data = DB::table('production_house')
             ->orderBy('id_ph', 'ASC')
             ->when($id_ph, function($query, $id_ph){
                 return $query->where('id_ph', $id_ph);
             })->get();
+        $response = [
+            'message' => 'List Production House',
+            'data' => $data
+        ];
+         return response()->json($response, Response::HTTP_OK);
     }
 
+    //Schedule
     public function schedule(Request $request)
     {
         $id_film = $request->id_film;
-        $id_waktu_tayang = $request->id_waktu_tayang;
-      
-        return \DB::table('vw_schedule')
-            ->orderBy('id_schedule', 'ASC')
+        $date = ($request->date) ? $request->date : date('y-m-d');
+        // return $id_film.$date;
+        $data = DB::table('vw_schedule')
             ->when($id_film, function($query, $id_film){
                 return $query->where('id_film', $id_film);
             })
-            ->when($id_waktu_tayang, function($query, $id_waktu_tayang){
-                return $query->where('id_waktu_tayang', $id_waktu_tayang);
+            ->when($date, function($query, $date){
+                return $query->where('date', $date);
             })
+            ->orderBy('id_schedule', 'ASC')
             ->get();
+        $response = [
+            'message' => 'List schedule',
+            'data' => $data
+        ];
+         return response()->json($response, Response::HTTP_OK);
     }
 
     //KURSI
     public function getAvailableSeat(Request $request)
     {
         $id_schedule = $request->id_schedule;
-        return DB::table('kursi')
-            ->join('vw_kursi_terjual', function ($join,  $id_schedule) {
+        $data = DB::table('kursi')
+            ->LeftJoin('vw_kursi_terjual', function ($join) use($id_schedule){
                 $join->on('kursi.id_kursi', '=', 'vw_kursi_terjual.id_kursi')
-                ->whereNotNull('vw_kursi_terjual.id_schedule', '=', $id_schedule);
+                ->where('vw_kursi_terjual.id_schedule', '=', $id_schedule);
             })
+            ->select('vw_kursi_terjual.*')
+            ->selectRaw('(kursi.id_kursi IS NOT NULL) AS available')
             ->get();
+        $response = [
+            'message' => 'List Seat',
+            'data' => $data
+        ];
+         return response()->json($response, Response::HTTP_OK);    
     }
 
 

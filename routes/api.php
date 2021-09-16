@@ -44,10 +44,13 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('/payment-method', [PaymentController::class, 'paymentMethod']);
     Route::get('/payment-status', [PaymentController::class, 'paymentStatus']);
     //TRANSACTION
-    Route::get('/submit-tiket', [TransactionController::class, 'submitTiket']);
-    Route::get('/submit-snacks', [TransactionController::class, 'submitSnacks']);
+    Route::post('/submit-tiket', [TransactionController::class, 'submitTiket']);
+    Route::post('/submit-snacks', [TransactionController::class, 'submitSnacks']);
     Route::get('/detail-transaksi', [TransactionController::class, 'detailTransaksi']);
-    Route::get('/buat-pesanan', [TransactionController::class, 'buatPesanan']);
+    Route::post('/buat-pesanan', [TransactionController::class, 'buatPesanan']);
+    Route::post('/verifikasi', [TransactionController::class, 'verifPembayaran']);
+    Route::get('/history-transaksi', [TransactionController::class, 'historyTransaksi']);
+
     
 });
 

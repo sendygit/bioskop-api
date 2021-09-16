@@ -55,20 +55,6 @@ class AuthController extends Controller
 
     public function login(Request $request)
     {
-        //CEK USER ADA ATAU TIDAK
-        // $user = User::where('email', $request->email)->first();
-        // //JIKA TIDAK ADA
-        // if (!$user){
-        //     return response()->json([
-        //         'message' => 'Email Invalid'
-        //     ], 401);
-        // }
-        // if (!\Hash::check($request->password, $user->password)) {
-        //     return response()->json([
-        //         'message' => 'Password Invalid'
-        //     ], 401);
-        // }
-
         $credentials = $request->validate([
             'email' => ['required', 'email'],
             'password' => ['required'],
@@ -86,8 +72,7 @@ class AuthController extends Controller
         }
 
         return response()->json([
-            'message' => 'Email/Password Invalid',
-        ], 401);
+            'message' => 'Email/Password Invalid'], 401);
 
 
     }

@@ -36,14 +36,14 @@ class ProfileController extends Controller
    
     public function updateProfile(Request $request, $id_user)
     {
-        $user = User::find($id_user)->update($request->all());
-
+        if ($user = User::find($id_user)->update($request->all())){
         $response = [
         'message' => 'Account updated',
+        'data' => $user
         ];
 
         return response()->json($response, Response::HTTP_OK);
-        
+    }
     //     $validator = Validator::make($request->all(),[
     //         'name' => ['required'],
     //         'email' => ['required'],

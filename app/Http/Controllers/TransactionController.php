@@ -125,7 +125,7 @@ class TransactionController extends Controller
         }
 
         try {
-            $user = Bills::create([
+            $data = Bills::create([
                 'id_t_tiket' => $request->id_t_tiket,
                 'id_t_snacks' => $request->id_t_snacks,
                 'id_user' => $request->id_user,
@@ -136,7 +136,7 @@ class TransactionController extends Controller
             ]);
             $response = [
                 'message' => 'Success',
-                'data' => $user
+                'data' => $data
             ];
 
             return response()->json($response, Response::HTTP_CREATED);
@@ -149,9 +149,30 @@ class TransactionController extends Controller
     }
 
 
+    public function verifPembayaran(Request $request)
+    {
+        return $request->file('image')->store('post-images');
+    }
 
 
+    public function historyTransaksi(Request $request)
+    {
+        $id_user = $request->id_user;
+        $id_status_pembayaran = $request->id_status_pembayaran;
+        $start_date = ($request->start_date) ? $request->start_date : date('y-m-d', strtotime("-30days"));
+        $end_date = ($request->end_date) ? $request->end_date : date('y-m-d', strtotime("+7days"));
 
+        return \DB::table('t_bills')
+            ->whereBetween('waktu_cetak', [$start_date, $end_date])
+            ->when($id_user, function($query, $id_user){
+                return $query->where('id_user', $id_user);
+            })
+            ->when($id_status_pembayaran, function($query, $id_status_pembayaran){
+                return $query->where('id_status_pembayaran', $id_status_pembayaran);
+            })
+            ->orderBy('waktu_cetak', 'DESC')
+            ->get();
+    }
 
 
     public function detailTransaksi(Request $request)
@@ -163,5 +184,6 @@ class TransactionController extends Controller
         ];
          return response()->json($response, Response::HTTP_OK);
     }
+   
     
 }
