@@ -51,12 +51,14 @@ class TransactionController extends Controller
             }
             
             $response = [
-                'message' => 'Success',
+                'success' => true,
+                'message' => 'Tiket Berhasil disubmit',
             ];
 
             return response()->json($response, Response::HTTP_CREATED);
         } catch (QueryException $e) {
             return response()->json([
+                'success' => false,
                 'message' => "Failed" . $e->errorInfo
             ]);
             
@@ -98,12 +100,14 @@ class TransactionController extends Controller
             }
             
             $response = [
-                'message' => 'Success',
+                'success' => true,
+                'message' => 'Snack Berhasil disubmit',
             ];
 
             return response()->json($response, Response::HTTP_CREATED);
         } catch (QueryException $e) {
             return response()->json([
+                'success' => false,
                 'message' => "Failed" . $e->errorInfo
             ]);
             
@@ -135,13 +139,15 @@ class TransactionController extends Controller
                 'updated_by' => $request->user()->id_user
             ]);
             $response = [
-                'message' => 'Success',
+                'success' => true,
+                'message' => 'Bills Berhasil disubmit',
                 'data' => $data
             ];
 
             return response()->json($response, Response::HTTP_CREATED);
         } catch (QueryException $e) {
             return response()->json([
+                'success' => false,
                 'message' => "Failed" . $e->errorInfo
             ]);
             
@@ -151,26 +157,34 @@ class TransactionController extends Controller
 
     public function verifPembayaran(Request $request)
     {
-        $validate = ValidatorHash::make($request->all(), $this->rules);
-        if ($validate->fails()) return $this->unprocessed($validate->errors());
 
-        $path = 'image' . $request->id_bills . '/';
-        $type = $request->file->extension();
-        $filename = uniqid . '.' . $type;
+        if ($request->file_name && $request->file_name->isValid()) {
+            $file_name = uniqid().'.'.$request->file_name->extension();
+            $request->file_name->move(public_path('images/verif'),$file_name);
+            $path = "public/images/verif/$file_name";
 
-        $request->file->storeAs($path, $filename, ['disk' => 'public']);
+            $data = DB::table('t_verification_bills')->insert([
+                'id_bills' => $request->id_bills,
+                'image' => $path,
+                'created_by' => $request->user()->id_user,
+                'updated_by' => $request->user()->id_user,
+                'created_at' => Carbon::now(),
+                'updated_at' => Carbon::now()
+            ]);
 
-        $data = file::create([
-            'id_bills' => $request->id_bills,
-            'type' => $type,
-            'table' => getTable($request->table),
-            'filename' => $filename,
-            'path' => 'storage/'. $path,
-            'created_by' => $request->user()->id_user,
-            'updated_by' => $request->user()->id_user
-        ]);
+            $response = [
+                'message' => 'Bukti Telah Terkirim',
+                'data' => $data
+            ];
+            return response()->json($response, Response::HTTP_CREATED);
+        }else {
+            $response = [
+                'message' => 'Failed',
+                'data' => ''
+            ];
+            return response()->json($response, Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
 
-        return $this->created();
     }
 
 
@@ -193,6 +207,7 @@ class TransactionController extends Controller
             ->get();
 
         $response = [
+            'success' => true,
             'message' => 'History Trasaksi',
             'data' => $data
         ];
