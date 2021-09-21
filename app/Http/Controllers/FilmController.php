@@ -82,9 +82,19 @@ class FilmController extends Controller
          return response()->json($response, Response::HTTP_OK);
     }
 
-    //Schedule
+    //Schedule masih eror
     public function schedule(Request $request)
     {
+        $validator = \Validator::make($request->all(),[
+            'id_film' => ['required'],
+            'date' => ['required']
+        ]);
+    
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 
+            Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
+
         $id_film = $request->id_film;
         $date = ($request->date) ? $request->date : date('y-m-d');
         // return $id_film.$date;
@@ -108,14 +118,20 @@ class FilmController extends Controller
     public function getAvailableSeat(Request $request)
     {
         $id_schedule = $request->id_schedule;
+        $schedule = DB::table('m_schedule')->where('id_schedule', $id_schedule)->first();
         $data = DB::table('kursi')
             ->LeftJoin('vw_kursi_terjual', function ($join) use($id_schedule){
                 $join->on('kursi.id_kursi', '=', 'vw_kursi_terjual.id_kursi')
                 ->where('vw_kursi_terjual.id_schedule', '=', $id_schedule);
             })
-            ->select('vw_kursi_terjual.*')
-            ->selectRaw('(kursi.id_kursi IS NOT NULL) AS available')
-            ->get();
+            ->select('kursi.*')
+            ->selectRaw('(vw_kursi_terjual.id_kursi IS NULL) AS available')
+            ->where('kursi.id_studio_penayangan', '=', $schedule->id_studio_penayangan)
+            ->get([
+                'kursi.id_schedule',
+                'kursi.id_kursi',
+                'kursi.id_studio_penayangan'
+            ]);
         $response = [
             'message' => 'List Seat',
             'data' => $data

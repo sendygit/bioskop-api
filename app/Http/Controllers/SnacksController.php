@@ -26,11 +26,17 @@ class SnacksController extends Controller
     {
         $id_kategori = $request->id_kategori;
       
-        return \DB::table('m_snacks')
+        $data = DB::table('m_snacks')
             ->orderBy('id_snacks', 'ASC')
             ->when($id_kategori, function($query, $id_kategori){
                 return $query->where('id_kategori', $id_kategori);
             })->get();
+
+        $response = [
+            'message' => 'List snacks',
+            'data' => $data
+        ];
+        return response()->json($response, Response::HTTP_OK);
     }
 
 }

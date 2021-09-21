@@ -10,6 +10,7 @@ use App\Models\TdetailTiket;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Validator;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -115,7 +116,6 @@ class TransactionController extends Controller
             'id_t_tiket' => ['required'],
             'id_t_snacks' => ['required'],
             'id_user' => ['required'],
-            'id_status_pembayaran' => ['required',],
             'id_metode_pembayaran' => ['required',]
         ]);
 
@@ -129,7 +129,7 @@ class TransactionController extends Controller
                 'id_t_tiket' => $request->id_t_tiket,
                 'id_t_snacks' => $request->id_t_snacks,
                 'id_user' => $request->id_user,
-                'id_status_pembayaran' => $request->id_status_pembayaran,
+                'id_status_pembayaran' => 3,
                 'id_metode_pembayaran' => $request->id_metode_pembayaran,
                 'created_by' => $request->user()->id_user,
                 'updated_by' => $request->user()->id_user
@@ -151,38 +151,72 @@ class TransactionController extends Controller
 
     public function verifPembayaran(Request $request)
     {
-        return $request->file('image')->store('post-images');
+        $validate = ValidatorHash::make($request->all(), $this->rules);
+        if ($validate->fails()) return $this->unprocessed($validate->errors());
+
+        $path = 'image' . $request->id_bills . '/';
+        $type = $request->file->extension();
+        $filename = uniqid . '.' . $type;
+
+        $request->file->storeAs($path, $filename, ['disk' => 'public']);
+
+        $data = file::create([
+            'id_bills' => $request->id_bills,
+            'type' => $type,
+            'table' => getTable($request->table),
+            'filename' => $filename,
+            'path' => 'storage/'. $path,
+            'created_by' => $request->user()->id_user,
+            'updated_by' => $request->user()->id_user
+        ]);
+
+        return $this->created();
     }
 
 
     public function historyTransaksi(Request $request)
     {
-        $id_user = $request->id_user;
+        $id_user = $request->user()->id_user;
         $id_status_pembayaran = $request->id_status_pembayaran;
-        $start_date = ($request->start_date) ? $request->start_date : date('y-m-d', strtotime("-30days"));
-        $end_date = ($request->end_date) ? $request->end_date : date('y-m-d', strtotime("+7days"));
+        $start_date = ($request->start_date) ? date($request->start_date) : date('y-m-d', strtotime("-30days"));
+        $end_date = ($request->end_date) ? Carbon::parse($request->end_date)->addDays(1)->format('y-m-d') : date('y-m-d', strtotime("+7days"));
 
-        return \DB::table('t_bills')
-            ->whereBetween('waktu_cetak', [$start_date, $end_date])
+        $data = DB::table('t_bills')
+            ->whereBetween('created_at', [$start_date, $end_date])
             ->when($id_user, function($query, $id_user){
                 return $query->where('id_user', $id_user);
             })
             ->when($id_status_pembayaran, function($query, $id_status_pembayaran){
                 return $query->where('id_status_pembayaran', $id_status_pembayaran);
             })
-            ->orderBy('waktu_cetak', 'DESC')
+            ->orderBy('created_at', 'DESC')
             ->get();
+
+        $response = [
+            'message' => 'History Trasaksi',
+            'data' => $data
+        ];
+        return response()->json($response, Response::HTTP_OK);
     }
 
 
     public function detailTransaksi(Request $request)
     {
+        try{
         $data = Bills::findOrFail($request->id_bills);
         $response = [
+            'success' => true,
             'message' => 'Detail transaksi',
             'data' => $data
         ];
+   
          return response()->json($response, Response::HTTP_OK);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => "Data tidak ditemukan"
+            ]);
+    }
     }
    
     
