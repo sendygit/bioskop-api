@@ -47,6 +47,7 @@ class FilmController extends Controller
     {
         $data = Genre::orderBy('id_genre', 'ASC')->get();
         $response = [
+            'success' => true,
             'message' => 'List genre',
             'data' => $data
         ];
@@ -59,6 +60,7 @@ class FilmController extends Controller
         $data = Film::findOrFail($request->id_film);
         $data->list_genre = DB::table('vw_genre')->where('id_film', $data->id_film)->get();
         $response = [
+            'success' => true,
             'message' => 'Detail film',
             'data' => $data
         ];
@@ -76,6 +78,7 @@ class FilmController extends Controller
                 return $query->where('id_ph', $id_ph);
             })->get();
         $response = [
+            'success' => true,
             'message' => 'List Production House',
             'data' => $data
         ];
@@ -108,6 +111,7 @@ class FilmController extends Controller
             ->orderBy('id_schedule', 'ASC')
             ->get();
         $response = [
+            'success' => true,
             'message' => 'List schedule',
             'data' => $data
         ];
@@ -133,6 +137,7 @@ class FilmController extends Controller
                 'kursi.id_studio_penayangan'
             ]);
         $response = [
+            'success' => true,
             'message' => 'List Seat',
             'data' => $data
         ];

@@ -23,8 +23,7 @@ use App\Http\Controllers\TransactionController;
 
 Route::middleware(['auth:sanctum'])->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
-    //Route::resource('/profile',ProfileController::class)->except(['create', 'store', 'edit', 'destroy']);
-    //Profile User
+   //PROFILE
     Route::get('/profile', [ProfileController::class, 'index']);
     Route::get('/profile/{id_user}', [ProfileController::class, 'show']);
     Route::put('/update-profile/{id_user}', [ProfileController::class, 'updateProfile']);

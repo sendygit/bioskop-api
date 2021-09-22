@@ -16,6 +16,7 @@ class SnacksController extends Controller
     {
         $data = KategoriSnacks::orderBy('id_kategori', 'ASC')->get();
         $response = [
+            'success' => true,
             'message' => 'List kategori snack',
             'data' => $data
         ];
@@ -33,6 +34,7 @@ class SnacksController extends Controller
             })->get();
 
         $response = [
+            'success' => true,
             'message' => 'List snacks',
             'data' => $data
         ];

@@ -15,6 +15,7 @@ class ProfileController extends Controller
     {
         $data = User::orderBy('created_at', 'ASC')->get();
         $response = [
+            'success' => true,
             'message' => 'List profile',
             'data' => $data
         ];
@@ -26,6 +27,7 @@ class ProfileController extends Controller
     {
         $data = User::findOrFail($id_user);
         $response = [
+            'success' => true,
             'message' => 'Detail of user',
             'data' => $data
         ];
@@ -38,44 +40,19 @@ class ProfileController extends Controller
     {
         if ($user = User::find($id_user)->update($request->all())){
         $response = [
-        'message' => 'Account updated',
-        'data' => $user
+        'success' => true,
+        'message' => 'Profile updated'
         ];
 
         return response()->json($response, Response::HTTP_OK);
+        } else {
+            $response = [
+            'success' => false,
+            'message' => 'Failed'
+        ];
+            return response()->json($response, Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
     }
-    //     $validator = Validator::make($request->all(),[
-    //         'name' => ['required'],
-    //         'email' => ['required'],
-    //         'contact_phone' => ['required'],
-    //         'address' => ['required']
-    //     ]);
-
-    //     if ($validator->fails()) {
-    //         return response()->json($validator->errors(), 
-    //         Response::HTTP_UNPROCESSABLE_ENTITY);
-    //     }
-
-    //     try {
-    //         $user = User::findOrFail($id_user)->update([
-    //             'name' => $request->name,
-    //             'email' => $request->email,
-    //             'contact_phone' => $request->contact_phone,
-    //             'address' => $request->address,
-    //         ]);
-    //     $response = [
-    //         'message' => 'Account updated'
-    //         ];
-
-    //     return response()->json($response, Response::HTTP_OK);           
-    
-    //     } catch (QueryException $e) {
-    //         return response()->json([
-    //             'message' => "Failed" . $e->errorInfo
-    //         ]);
-            
-    //     }
-     }
 
     public function updatePhoto(Request $request, $id_user)
     {
@@ -97,6 +74,7 @@ class ProfileController extends Controller
                 }
                 $user->update();
                 $response = [
+                    'success' => true,
                     'message' => 'Photo updated',
                     'data' => $user
                     ];
@@ -106,6 +84,7 @@ class ProfileController extends Controller
 
             }catch (QueryException $e) {
                     return response()->json([
+                        'success' => false,
                         'message' => "Failed" . $e->errorInfo
                     ]);
             }

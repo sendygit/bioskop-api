@@ -14,6 +14,7 @@ class PaymentController extends Controller
     {
         $data = MetodePembayaran::orderBy('id_metode_pembayaran', 'ASC')->get();
         $response = [
+            'success' => true,
             'message' => 'List metode pembayaran',
             'data' => $data
         ];
@@ -24,6 +25,7 @@ class PaymentController extends Controller
     {
         $data = StatusPembayaran::orderBy('id_status_pembayaran', 'ASC')->get();
         $response = [
+            'success' => true,
             'message' => 'List status pembayaran',
             'data' => $data
         ];

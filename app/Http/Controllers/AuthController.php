@@ -39,6 +39,7 @@ class AuthController extends Controller
                 'update_by' => 1
             ]);
             $response = [
+                'success' => true,
                 'message' => 'Account created',
                 'data' => $user
             ];
@@ -46,6 +47,7 @@ class AuthController extends Controller
             return response()->json($response, Response::HTTP_CREATED);
         } catch (QueryException $e) {
             return response()->json([
+                'success' => false,
                 'message' => "Failed" . $e->errorInfo
             ]);
             
@@ -65,16 +67,16 @@ class AuthController extends Controller
             $token = $user->createToken('token')->plainTextToken;
             //JIKA ADA
             return response()->json([
-                'message' => 'success',
+                'success' => true,
+                'message' => 'Berhasil Login',
                 'user' => $user,
                 'token' => $token,
             ], 200);
         }
 
         return response()->json([
+            'success' => false,
             'message' => 'Email/Password Invalid'], 401);
-
-
     }
 
     public function logout(Request $request)
@@ -83,6 +85,7 @@ class AuthController extends Controller
         $user->currentAccessToken()->delete();
 
         return response()->json([
+            'success' => true,
             'message' => 'Berhasil logout'
         ], 200);
     }

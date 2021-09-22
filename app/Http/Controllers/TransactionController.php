@@ -157,11 +157,10 @@ class TransactionController extends Controller
 
     public function verifPembayaran(Request $request)
     {
-
-        if ($request->file_name && $request->file_name->isValid()) {
-            $file_name = uniqid().'.'.$request->file_name->extension();
-            $request->file_name->move(public_path('images/verif'),$file_name);
-            $path = "public/images/verif/$file_name";
+        if ($request->image && $request->image->isValid()) {
+            $image = uniqid().'.'.$request->image->extension();
+            $request->image->move(public_path('images/verif'),$image);
+            $path = "public/images/verif/$image";
 
             $data = DB::table('t_verification_bills')->insert([
                 'id_bills' => $request->id_bills,
@@ -173,12 +172,14 @@ class TransactionController extends Controller
             ]);
 
             $response = [
+                'success' => true,
                 'message' => 'Bukti Telah Terkirim',
                 'data' => $data
             ];
             return response()->json($response, Response::HTTP_CREATED);
         }else {
             $response = [
+                'success' => false,
                 'message' => 'Failed',
                 'data' => ''
             ];
@@ -194,7 +195,7 @@ class TransactionController extends Controller
         $id_status_pembayaran = $request->id_status_pembayaran;
         $start_date = ($request->start_date) ? date($request->start_date) : date('y-m-d', strtotime("-30days"));
         $end_date = ($request->end_date) ? Carbon::parse($request->end_date)->addDays(1)->format('y-m-d') : date('y-m-d', strtotime("+7days"));
-
+      
         $data = DB::table('t_bills')
             ->whereBetween('created_at', [$start_date, $end_date])
             ->when($id_user, function($query, $id_user){
