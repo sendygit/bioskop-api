@@ -85,7 +85,7 @@ class FilmController extends Controller
          return response()->json($response, Response::HTTP_OK);
     }
 
-    //Schedule masih eror
+    //Schedule
     public function schedule(Request $request)
     {
         $validator = \Validator::make($request->all(),[

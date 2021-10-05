@@ -154,38 +154,84 @@ class TransactionController extends Controller
         }
     }
 
-
+    //Verifikasi Pembayaran
     public function verifPembayaran(Request $request)
     {
-        if ($request->image && $request->image->isValid()) {
-            $image = uniqid().'.'.$request->image->extension();
-            $request->image->move(public_path('images/verif'),$image);
-            $path = "public/images/verif/$image";
+        $validator = Validator::make($request->all(),[
+            'id_bills' => ['required'],
+            'images' => [
+                'image' => ['required']
+            ]
+        ]);
 
-            $data = DB::table('t_verification_bills')->insert([
-                'id_bills' => $request->id_bills,
-                'image' => $path,
-                'created_by' => $request->user()->id_user,
-                'updated_by' => $request->user()->id_user,
-                'created_at' => Carbon::now(),
-                'updated_at' => Carbon::now()
-            ]);
-
-            $response = [
-                'success' => true,
-                'message' => 'Bukti Telah Terkirim',
-                'data' => $data
-            ];
-            return response()->json($response, Response::HTTP_CREATED);
-        }else {
-            $response = [
-                'success' => false,
-                'message' => 'Failed',
-                'data' => ''
-            ];
-            return response()->json($response, Response::HTTP_UNPROCESSABLE_ENTITY);
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 
+            Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
+        // if ($request->image && $request->image->isValid()) {
+           
+        //     $image = uniqid().'.'.$request->image->extension();
+        //     $request->image->move(public_path('images/verif'),$image);
+        //     $path = "public/images/verif/$image";
+    
+        //     $data = DB::table('t_verification_bills')->insert([
+        //         'id_bills' => $request->id_bills,
+        //         'image' => $path,
+        //         'created_by' => $request->user()->id_user,
+        //         'updated_by' => $request->user()->id_user,
+        //         'created_at' => Carbon::now(),
+        //         'updated_at' => Carbon::now()
+        //     ]);
+
+        //     $response = [
+        //         'success' => true,
+        //         'message' => 'Bukti Telah Terkirim',
+        //         'data' => $data
+        //     ];
+        //     return response()->json($response, Response::HTTP_CREATED);
+
+        //     } else {
+        //     $response = [
+        //         'success' => false,
+        //         'message' => 'Failed',
+        //         'data' => ''
+        //     ];
+        //     return response()->json($response, Response::HTTP_UNPROCESSABLE_ENTITY);
+        // }
+
+        //MULTIPLE   
+        $files = $request->file('images');
+        if ($request->hasFile('images')) {
+
+            foreach ($files as $file) {
+                $new_name = uniqid().'.'.$file->getClientOriginalExtension();
+                $file->move(public_path('images/verif'),$new_name);
+                $path = "public/images/verif/$new_name";
+
+                $data = DB::table('t_verification_bills')->insert([
+                        'id_bills' => $request->id_bills,
+                        'image' => $path,
+                        'created_by' => $request->user()->id_user,
+                        'updated_by' => $request->user()->id_user,
+                        'created_at' => Carbon::now(),
+                        'updated_at' => Carbon::now()
+                    ]);
+            }
+            $response = [
+                'success' => true,
+                'message' => 'Bukti Telah Terkirim'
+            ];
+
+            return response()->json($response, Response::HTTP_CREATED);
+         } else {
+                $response = [
+                    'success' => false,
+                    'message' => 'Failed',
+                    'data' => ''
+                ];
+                return response()->json($response, Response::HTTP_UNPROCESSABLE_ENTITY);
+       }
     }
 
 
