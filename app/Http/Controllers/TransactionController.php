@@ -276,7 +276,7 @@ class TransactionController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => "Data tidak ditemukan"
+                'message' => "Failed"
             ]);
     }
     }
